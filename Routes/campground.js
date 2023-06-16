@@ -13,17 +13,15 @@ mongoose
     console.log(err);
   });
 
-Router.get("/", (req, res) => {
-  res.render("home");
+Router.get("/campgrounds", async (req, res) => {
+  const campgrounds = await Campground.find({});
+  res.render("campgrounds/index", { campgrounds });
 });
 
-Router.get("/makecampground", async (req, res) => {
-  const camp = new Campground({
-    title: "My Backyard",
-    description: "Cheap Camping",
-  });
-  await camp.save();
-  res.send(camp);
+Router.get("/campgrounds/:id", async (req, res) => {
+  const { id } = req.params;
+  const campground = await Campground.findById(id);
+  res.render("campgrounds/show", { campground });
 });
 
 module.exports = Router;
