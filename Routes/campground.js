@@ -48,4 +48,10 @@ Router.put("/campgrounds/:id", async (req, res) => {
   );
   res.render("campgrounds/show", { campground });
 });
+
+Router.delete("/campgrounds/:id", async (req, res) => {
+  const { id } = req.params;
+  await Campground.findByIdAndDelete(id);
+  res.redirect("/campgrounds");
+});
 module.exports = Router;
