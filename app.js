@@ -3,6 +3,7 @@ const path = require("path");
 const methodOverRide = require("method-override");
 const ejsMate = require("ejs-mate");
 const fs = require("fs");
+
 const routesCampGround = require("./Routes/campground");
 const AppError = require("./AppError");
 
@@ -33,10 +34,14 @@ app.all("*", (req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
-  const { status = 500, message = "Something went wrong" } = err;
+  const {
+    status = 500,
+    message = "Something went wrong",
+    name = "no name",
+  } = err;
   const logerror = `${new Date().toLocaleString()} - ${req.method} - ${
     req.url
-  } - ${status} - ${message} \n `;
+  } - ${status} - ${message} - ${name} \n `;
   fs.appendFile("error.log", logerror, (error) => {
     if (error) {
       console.log("logging error");

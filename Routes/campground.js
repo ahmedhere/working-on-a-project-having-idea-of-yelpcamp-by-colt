@@ -2,9 +2,20 @@ const express = require("express");
 const mongoose = require("mongoose");
 const Campground = require("../models/champground");
 const AppError = require("../AppError");
+const Joi = require("joi");
+const { campGroundSchema } = require("../Schemas.js");
 
 const Router = express.Router();
 
+const validateCampground = (req, res, next) => {
+  const { error } = campGroundSchema.validate(req.body);
+  if (error) {
+    const message = error.details.map((el) => el.message).join(",");
+    throw new AppError(400, message);
+  } else {
+    next();
+  }
+};
 mongoose
   .connect("mongodb://127.0.0.1:27017/yelp-camp")
   .then(() => {
@@ -47,11 +58,8 @@ Router.get("/campgrounds/:id", async (req, res, next) => {
   }
 });
 
-Router.post("/campgrounds", async (req, res, next) => {
+Router.post("/campgrounds", validateCampground, async (req, res, next) => {
   try {
-    if (!req.body.campground) {
-      throw new AppError(400, "Invalid campground data");
-    }
     const campground = new Campground(req.body.campground);
     await campground.save();
     if (!campground.id) {
@@ -84,7 +92,7 @@ Router.get("/campgrounds/:id/edit", async (req, res, next) => {
   }
 });
 
-Router.put("/campgrounds/:id", async (req, res, next) => {
+Router.put("/campgrounds/:id", validateCampground, async (req, res, next) => {
   try {
     const { id } = req.params;
     if (id.length < 24 || id.length > 24) {
