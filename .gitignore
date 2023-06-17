@@ -1,4 +1,4 @@
 node_modules
 
-error.log
-request.log
+./error.log
+./request.log
