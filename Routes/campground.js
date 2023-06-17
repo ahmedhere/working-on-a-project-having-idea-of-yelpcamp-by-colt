@@ -14,82 +14,116 @@ mongoose
     console.log(err);
   });
 
-Router.get("/campgrounds", async (req, res) => {
-  const campgrounds = await Campground.find({});
-  res.render("campgrounds/index", { campgrounds });
+Router.get("/campgrounds", async (req, res, next) => {
+  try {
+    const campgrounds = await Campground.find({});
+    res.render("campgrounds/index", { campgrounds });
+  } catch (e) {
+    next(e);
+  }
 });
 
 Router.get("/campgrounds/new", (req, res) => {
   res.render("campgrounds/new");
 });
 Router.get("/campgrounds/:id", async (req, res, next) => {
-  const { id } = req.params;
-  if (id < 24 || id > 24) {
-    return next(
-      new AppError(
-        401,
-        "Invalid ID. The id you entered doesn't match the legacy"
-      )
-    );
+  try {
+    const { id } = req.params;
+    if (id.length < 24 || id.length > 24) {
+      return next(
+        new AppError(
+          401,
+          "Invalid ID. The id you entered doesn't match the legacy"
+        )
+      );
+    }
+    const campground = await Campground.findById(id);
+    if (!campground) {
+      return next(new AppError(404, "not found"));
+    }
+    res.render("campgrounds/show", { campground });
+  } catch (e) {
+    next(e);
   }
-
-  const campground = await Campground.findById(id);
-  if (!campground) {
-    return next(new AppError(404, "not found"));
-  }
-  res.render("campgrounds/show", { campground });
 });
 
 Router.post("/campgrounds", async (req, res, next) => {
-  const campground = new Campground(req.body.campground);
-  await campground.save();
-  if (!campground.id) {
-    return next(new AppError(404, "Not Found"));
+  try {
+    if (!req.body.campground) {
+      throw new AppError(400, "Invalid campground data");
+    }
+    const campground = new Campground(req.body.campground);
+    await campground.save();
+    if (!campground.id) {
+      return next(new AppError(404, "Not Found"));
+    }
+    res.redirect(`campgrounds/${campground._id}`);
+  } catch (e) {
+    next(e);
   }
-  res.redirect(`campgrounds/${campground._id}`);
 });
 
-Router.get("/campgrounds/:id/edit", async (req, res) => {
-  const { id } = req.params;
-  if (id < 24 || id > 24) {
-    return next(
-      new AppError(
-        401,
-        "Invalid ID. The id you entered doesn't match the legacy"
-      )
+Router.get("/campgrounds/:id/edit", async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    if (id.length < 24 || id.length > 24) {
+      return next(
+        new AppError(
+          401,
+          "Invalid ID. The id you entered doesn't match the legacy"
+        )
+      );
+    }
+    const campground = await Campground.findById(id);
+    if (!campground) {
+      return next(new AppError(404, "not found"));
+    }
+    res.render("campgrounds/edit", { campground });
+  } catch (e) {
+    next(e);
+  }
+});
+
+Router.put("/campgrounds/:id", async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    if (id.length < 24 || id.length > 24) {
+      return next(
+        new AppError(
+          401,
+          "Invalid ID. The id you entered doesn't match the legacy"
+        )
+      );
+    }
+    const campground = await Campground.findByIdAndUpdate(
+      id,
+      req.body.campground,
+      { new: true }
     );
+    if (!campground) {
+      return next(new AppError(404, "not found"));
+    }
+    res.render("campgrounds/show", { campground });
+  } catch (e) {
+    next(e);
   }
-  const campground = await Campground.findById(id);
-  if (!campground) {
-    return next(new AppError(404, "not found"));
-  }
-  res.render("campgrounds/edit", { campground });
 });
 
-Router.put("/campgrounds/:id", async (req, res) => {
-  const { id } = req.params;
-  if (id < 24 || id > 24) {
-    return next(
-      new AppError(
-        401,
-        "Invalid ID. The id you entered doesn't match the legacy"
-      )
-    );
+Router.delete("/campgrounds/:id", async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    if (id.length < 24 || id.length > 24) {
+      return next(
+        new AppError(
+          401,
+          "Invalid ID. The id you entered doesn't match the legacy"
+        )
+      );
+    }
+    await Campground.findByIdAndDelete(id);
+    res.redirect("/campgrounds");
+  } catch (e) {
+    next(e);
   }
-  const campground = await Campground.findByIdAndUpdate(
-    id,
-    req.body.campground,
-    { new: true }
-  );
-  if (!campground) {
-    return next(new AppError(404, "not found"));
-  }
-  res.render("campgrounds/show", { campground });
-});
-
-Router.delete("/campgrounds/:id", async (req, res) => {
-  const { id } = req.params;
-  await Campground.findByIdAndDelete(id);
-  res.redirect("/campgrounds");
 });
 module.exports = Router;

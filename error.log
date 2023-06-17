@@ -1,4 +1,20 @@
 6/17/2023, 7:59:49 AM - GET - /campgrounds/648d2131ec8a3bf4550c5cec - 404 - not found 
  6/17/2023, 8:15:25 AM - GET - /campgrounds/648d250a2dac63931e6da0cd?_method=DELETE - 404 - not found 
  6/17/2023, 8:15:32 AM - GET - /campgrounds/648d250a2dac63931e6da0cd - 404 - not found 
+ 6/17/2023, 8:34:02 AM - GET - /campgrounds/648c33ad8f1eccb7b5 - 401 - Invalid ID. The id you entered doesn't match the legacy 
+ 6/17/2023, 8:34:10 AM - GET - /campgrounds/648c33ad8f1eccb7b54160fcasas - 401 - Invalid ID. The id you entered doesn't match the legacy 
+ 6/17/2023, 8:34:19 AM - GET - /campgrounds/648c33ad8/edit - 401 - Invalid ID. The id you entered doesn't match the legacy 
+ 6/17/2023, 8:34:27 AM - GET - /campgrounds/648c33ad8f1eccasb7b54160fc/edit - 401 - Invalid ID. The id you entered doesn't match the legacy 
+ 6/17/2023, 8:39:34 AM - POST - /campgrounds - 500 - Campground validation failed: price: Cast to Number failed for value "asas" (type string) at path "price" 
+ 6/17/2023, 8:39:51 AM - GET - /campgrounds/asas - 401 - Invalid ID. The id you entered doesn't match the legacy 
+ 6/17/2023, 8:42:25 AM - GET - /campgrounds/asas - 401 - Invalid ID. The id you entered doesn't match the legacy 
+ 6/17/2023, 9:02:21 AM - POST - /campgrounds - 500 - Campground validation failed: price: Cast to Number failed for value "jnkas" (type string) at path "price" 
+ 6/17/2023, 9:02:48 AM - POST - /campgrounds - 500 - Campground validation failed: price: Cast to Number failed for value "jnkas" (type string) at path "price" 
+ 6/17/2023, 9:03:50 AM - POST - /campgrounds - 500 - Campground validation failed: price: Cast to Number failed for value "jnkas" (type string) at path "price" 
+ 6/17/2023, 9:04:15 AM - GET - /campgroundsbjk - 404 - Page Not Found 
+ 6/17/2023, 9:04:25 AM - GET - /campgrounds/648c33ad8f1eccb7b - 401 - Invalid ID. The id you entered doesn't match the legacy 
+ 6/17/2023, 9:04:34 AM - GET - /campgrounds/648c33ad8f1eccb7b54160fesa - 401 - Invalid ID. The id you entered doesn't match the legacy 
+ 6/17/2023, 9:04:42 AM - GET - /campgrounds/648c33ad8f1eccb7b54180fe - 404 - not found 
+ 6/17/2023, 9:06:02 AM - GET - /campgrounds/648c33ad8f1eccb7b541 - 401 - Invalid ID. The id you entered doesn't match the legacy 
+ 6/17/2023, 9:06:15 AM - POST - /campgrounds - 500 - Campground validation failed: price: Cast to Number failed for value "hjbjknas" (type string) at path "price" 
  

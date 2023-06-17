@@ -28,8 +28,8 @@ app.engine("ejs", ejsMate);
 
 app.use("/", routesCampGround);
 
-app.use("*", (req, res) => {
-  res.status(404).send("not found");
+app.all("*", (req, res, next) => {
+  next(new AppError(404, "Page Not Found"));
 });
 
 app.use((err, req, res, next) => {
@@ -44,7 +44,7 @@ app.use((err, req, res, next) => {
       console.log("error has been logged and handled");
     }
   });
-  res.status(status).send(message);
+  res.status(status).render("error", { err });
 });
 
 app.listen(3000, () => {
