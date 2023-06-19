@@ -5,6 +5,7 @@ const ejsMate = require("ejs-mate");
 const fs = require("fs");
 const routesCampGround = require("./Routes/campground");
 const routeReview = require("./Routes/review");
+const session = require("express-session");
 const AppError = require("./AppError");
 const app = express();
 
@@ -12,6 +13,17 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverRide("_method"));
 app.use(express.static(path.join(__dirname, "public")));
+const sessionConfig = {
+  secret: "Thisshouldbeabettersecret!",
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    httpOnly: true,
+    expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+    maxAge: 1000 * 60 * 60 * 24 * 7,
+  },
+};
+app.use(session(sessionConfig));
 app.use((req, res, next) => {
   const request = `${new Date().toLocaleString()} ${req.method} ${req.url}\n`;
   fs.appendFile("request.log", request, (error) => {
