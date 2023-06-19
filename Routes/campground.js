@@ -2,10 +2,17 @@ const express = require("express");
 const mongoose = require("mongoose");
 const Campground = require("../models/champground");
 const AppError = require("../AppError");
-const Joi = require("joi");
 const { campGroundSchema } = require("../Schemas.js");
 
 const Router = express.Router();
+mongoose
+  .connect("mongodb://127.0.0.1:27017/yelp-camp")
+  .then(() => {
+    console.log("Database connected");
+  })
+  .catch((err) => {
+    console.log(err);
+  });
 
 const validateCampground = (req, res, next) => {
   const { error } = campGroundSchema.validate(req.body);
@@ -16,16 +23,8 @@ const validateCampground = (req, res, next) => {
     next();
   }
 };
-mongoose
-  .connect("mongodb://127.0.0.1:27017/yelp-camp")
-  .then(() => {
-    console.log("Database connected");
-  })
-  .catch((err) => {
-    console.log(err);
-  });
 
-Router.get("/campgrounds", async (req, res, next) => {
+Router.get("/", async (req, res, next) => {
   try {
     const campgrounds = await Campground.find({});
     res.render("campgrounds/index", { campgrounds });
@@ -34,10 +33,10 @@ Router.get("/campgrounds", async (req, res, next) => {
   }
 });
 
-Router.get("/campgrounds/new", (req, res) => {
+Router.get("/new", (req, res) => {
   res.render("campgrounds/new");
 });
-Router.get("/campgrounds/:id", async (req, res, next) => {
+Router.get("/:id", async (req, res, next) => {
   try {
     const { id } = req.params;
     if (id.length < 24 || id.length > 24) {
@@ -48,7 +47,8 @@ Router.get("/campgrounds/:id", async (req, res, next) => {
         )
       );
     }
-    const campground = await Campground.findById(id);
+    const campground = await Campground.findById(id).populate("reviews");
+    // console.log(campground);
     if (!campground) {
       return next(new AppError(404, "not found"));
     }
@@ -58,7 +58,7 @@ Router.get("/campgrounds/:id", async (req, res, next) => {
   }
 });
 
-Router.post("/campgrounds", validateCampground, async (req, res, next) => {
+Router.post("/", validateCampground, async (req, res, next) => {
   try {
     const campground = new Campground(req.body.campground);
     await campground.save();
@@ -71,7 +71,7 @@ Router.post("/campgrounds", validateCampground, async (req, res, next) => {
   }
 });
 
-Router.get("/campgrounds/:id/edit", async (req, res, next) => {
+Router.get("/:id/edit", async (req, res, next) => {
   try {
     const { id } = req.params;
     if (id.length < 24 || id.length > 24) {
@@ -92,7 +92,7 @@ Router.get("/campgrounds/:id/edit", async (req, res, next) => {
   }
 });
 
-Router.put("/campgrounds/:id", validateCampground, async (req, res, next) => {
+Router.put("/:id", validateCampground, async (req, res, next) => {
   try {
     const { id } = req.params;
     if (id.length < 24 || id.length > 24) {
@@ -117,7 +117,7 @@ Router.put("/campgrounds/:id", validateCampground, async (req, res, next) => {
   }
 });
 
-Router.delete("/campgrounds/:id", async (req, res, next) => {
+Router.delete("/:id", async (req, res, next) => {
   try {
     const { id } = req.params;
     if (id.length < 24 || id.length > 24) {
@@ -134,4 +134,5 @@ Router.delete("/campgrounds/:id", async (req, res, next) => {
     next(e);
   }
 });
+
 module.exports = Router;

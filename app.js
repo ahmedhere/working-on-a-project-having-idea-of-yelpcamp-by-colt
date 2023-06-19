@@ -3,15 +3,15 @@ const path = require("path");
 const methodOverRide = require("method-override");
 const ejsMate = require("ejs-mate");
 const fs = require("fs");
-
 const routesCampGround = require("./Routes/campground");
+const routeReview = require("./Routes/review");
 const AppError = require("./AppError");
-
 const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverRide("_method"));
+app.use(express.static(path.join(__dirname, "public")));
 app.use((req, res, next) => {
   const request = `${new Date().toLocaleString()} ${req.method} ${req.url}\n`;
   fs.appendFile("request.log", request, (error) => {
@@ -27,7 +27,8 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.engine("ejs", ejsMate);
 
-app.use("/", routesCampGround);
+app.use("/campgrounds", routesCampGround);
+app.use("/campgrounds/:id/reviews", routeReview);
 
 app.all("*", (req, res, next) => {
   next(new AppError(404, "Page Not Found"));
