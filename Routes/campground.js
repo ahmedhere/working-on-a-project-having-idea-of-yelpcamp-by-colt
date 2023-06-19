@@ -50,8 +50,11 @@ Router.get("/:id", async (req, res, next) => {
     const campground = await Campground.findById(id).populate("reviews");
     // console.log(campground);
     if (!campground) {
+      req.flash("error", "cannot find the campground");
+      return res.redirect("/campgrounds");
       return next(new AppError(404, "not found"));
     }
+
     res.render("campgrounds/show", { campground });
   } catch (e) {
     next(e);
@@ -65,6 +68,7 @@ Router.post("/", validateCampground, async (req, res, next) => {
     if (!campground.id) {
       return next(new AppError(404, "Not Found"));
     }
+    req.flash("success", "Successfully made a new campground");
     res.redirect(`campgrounds/${campground._id}`);
   } catch (e) {
     next(e);
@@ -84,6 +88,8 @@ Router.get("/:id/edit", async (req, res, next) => {
     }
     const campground = await Campground.findById(id);
     if (!campground) {
+      req.flash("error", "cannot find the campground");
+      return res.redirect("/campgrounds");
       return next(new AppError(404, "not found"));
     }
     res.render("campgrounds/edit", { campground });
@@ -111,7 +117,8 @@ Router.put("/:id", validateCampground, async (req, res, next) => {
     if (!campground) {
       return next(new AppError(404, "not found"));
     }
-    res.render("campgrounds/show", { campground });
+    req.flash("success", "Successfully updated");
+    res.redirect(`/campgrounds/${campground._id}`);
   } catch (e) {
     next(e);
   }
@@ -129,6 +136,7 @@ Router.delete("/:id", async (req, res, next) => {
       );
     }
     await Campground.findByIdAndDelete(id);
+    req.flash("success", "Successfully deleted a campground");
     res.redirect("/campgrounds");
   } catch (e) {
     next(e);

@@ -7,6 +7,7 @@ const routesCampGround = require("./Routes/campground");
 const routeReview = require("./Routes/review");
 const session = require("express-session");
 const AppError = require("./AppError");
+const flash = require("connect-flash");
 const app = express();
 
 app.use(express.json());
@@ -24,6 +25,7 @@ const sessionConfig = {
   },
 };
 app.use(session(sessionConfig));
+app.use(flash());
 app.use((req, res, next) => {
   const request = `${new Date().toLocaleString()} ${req.method} ${req.url}\n`;
   fs.appendFile("request.log", request, (error) => {
@@ -38,6 +40,12 @@ app.use((req, res, next) => {
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.engine("ejs", ejsMate);
+
+app.use((req, res, next) => {
+  res.locals.success = req.flash("success");
+  res.locals.error = req.flash("error");
+  next();
+});
 
 app.use("/campgrounds", routesCampGround);
 app.use("/campgrounds/:id/reviews", routeReview);
