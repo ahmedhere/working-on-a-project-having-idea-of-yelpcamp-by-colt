@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const Campground = require("../models/champground");
 const AppError = require("../AppError");
+const { isLoggedIn } = require("../middleware/isloggedin");
 const { campGroundSchema } = require("../Schemas.js");
 
 const Router = express.Router();
@@ -33,7 +34,7 @@ Router.get("/", async (req, res, next) => {
   }
 });
 
-Router.get("/new", (req, res) => {
+Router.get("/new", isLoggedIn, (req, res) => {
   res.render("campgrounds/new");
 });
 Router.get("/:id", async (req, res, next) => {
@@ -47,7 +48,9 @@ Router.get("/:id", async (req, res, next) => {
         )
       );
     }
-    const campground = await Campground.findById(id).populate("reviews");
+    const campground = await Campground.findById(id)
+      .populate("reviews")
+      .populate("author");
     // console.log(campground);
     if (!campground) {
       req.flash("error", "cannot find the campground");
@@ -61,9 +64,10 @@ Router.get("/:id", async (req, res, next) => {
   }
 });
 
-Router.post("/", validateCampground, async (req, res, next) => {
+Router.post("/", isLoggedIn, validateCampground, async (req, res, next) => {
   try {
     const campground = new Campground(req.body.campground);
+    campground.author = req.user._id;
     await campground.save();
     if (!campground.id) {
       return next(new AppError(404, "Not Found"));
@@ -75,7 +79,7 @@ Router.post("/", validateCampground, async (req, res, next) => {
   }
 });
 
-Router.get("/:id/edit", async (req, res, next) => {
+Router.get("/:id/edit", isLoggedIn, async (req, res, next) => {
   try {
     const { id } = req.params;
     if (id.length < 24 || id.length > 24) {
@@ -87,6 +91,10 @@ Router.get("/:id/edit", async (req, res, next) => {
       );
     }
     const campground = await Campground.findById(id);
+    if (!campground.author.equals(req.user._id)) {
+      req.flash("error", "You do not have permission to edit it!");
+      return res.redirect(`/campgrounds/${id}`);
+    }
     if (!campground) {
       req.flash("error", "cannot find the campground");
       return res.redirect("/campgrounds");
@@ -98,7 +106,7 @@ Router.get("/:id/edit", async (req, res, next) => {
   }
 });
 
-Router.put("/:id", validateCampground, async (req, res, next) => {
+Router.put("/:id", isLoggedIn, validateCampground, async (req, res, next) => {
   try {
     const { id } = req.params;
     if (id.length < 24 || id.length > 24) {
@@ -108,6 +116,11 @@ Router.put("/:id", validateCampground, async (req, res, next) => {
           "Invalid ID. The id you entered doesn't match the legacy"
         )
       );
+    }
+    const campFound = await Campground.findById(id);
+    if (!campFound.author.equals(req.user._id)) {
+      req.flash("error", "You do not have permission to edit it!");
+      return res.redirect(`/campgrounds/${id}`);
     }
     const campground = await Campground.findByIdAndUpdate(
       id,
@@ -124,7 +137,7 @@ Router.put("/:id", validateCampground, async (req, res, next) => {
   }
 });
 
-Router.delete("/:id", async (req, res, next) => {
+Router.delete("/:id", isLoggedIn, async (req, res, next) => {
   try {
     const { id } = req.params;
     if (id.length < 24 || id.length > 24) {
@@ -134,6 +147,11 @@ Router.delete("/:id", async (req, res, next) => {
           "Invalid ID. The id you entered doesn't match the legacy"
         )
       );
+    }
+    const campFound = await Campground.findById(id);
+    if (!campFound.author.equals(req.user._id)) {
+      req.flash("error", "You do not have permission to edit it!");
+      return res.redirect(`/campgrounds/${id}`);
     }
     await Campground.findByIdAndDelete(id);
     req.flash("success", "Successfully deleted a campground");

@@ -8,7 +8,11 @@ const routeReview = require("./Routes/review");
 const session = require("express-session");
 const AppError = require("./AppError");
 const flash = require("connect-flash");
+const passport = require("passport");
+const LocalStrategy = require("passport-local");
 const app = express();
+const User = require("./models/user");
+const userRoute = require("./Routes/users");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -26,6 +30,12 @@ const sessionConfig = {
 };
 app.use(session(sessionConfig));
 app.use(flash());
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
 app.use((req, res, next) => {
   const request = `${new Date().toLocaleString()} ${req.method} ${req.url}\n`;
   fs.appendFile("request.log", request, (error) => {
@@ -42,11 +52,21 @@ app.set("views", path.join(__dirname, "views"));
 app.engine("ejs", ejsMate);
 
 app.use((req, res, next) => {
+  res.locals.currentUser = req.user;
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
   next();
 });
-
+// testing of the passport
+// app.get("/fakeuser", async (req, res) => {
+//   const user = new User({
+//     email: "ahmedaries.97@gmail.com",
+//     username: "ahmedaries",
+//   });
+//   const newUser = await User.register(user, "broishere");
+//   res.send(newUser);
+// });
+app.use("/", userRoute);
 app.use("/campgrounds", routesCampGround);
 app.use("/campgrounds/:id/reviews", routeReview);
 
