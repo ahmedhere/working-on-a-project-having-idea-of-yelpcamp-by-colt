@@ -1,5 +1,7 @@
 const Campground = require("../models/champground");
 const { campGroundSchema } = require("../Schemas.js");
+const { reviewSchema } = require("../Schemas.js");
+const AppError = require("../AppError");
 module.exports.isLoggedIn = (req, res, next) => {
   if (!req.isAuthenticated()) {
     req.session.returnTo = req.originalUrl;
@@ -35,4 +37,14 @@ module.exports.isAuthor = async (req, res, next) => {
     return res.redirect(`/campgrounds/${id}`);
   }
   next();
+};
+
+module.exports.validateReview = (req, res, next) => {
+  const { error } = reviewSchema.validate(req.body);
+  if (error) {
+    const message = error.details.map((el) => el.message).join(",");
+    throw new AppError(400, message);
+  } else {
+    next();
+  }
 };

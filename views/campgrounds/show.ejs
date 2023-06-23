@@ -1,6 +1,6 @@
 <% layout('Layout/BoilerPlate') %>
 <div class="row">
-    <div class="col-6">
+    <div class="col-6 <%= campground.reviews.length == 0 && !currentUser ? 'offset-3': '' %>">
         <div class="card mb-3">
             <img src="<%= campground.image %>" alt="<%= campground.title %>">
             <div class="card-body">
@@ -35,11 +35,13 @@
         </div>
 
         </div>
-        <div class="col">
-            <% if (currentUser) { %>
-             
-                <h2>Leave a review</h2>
-                <form action="/campgrounds/<%= campground._id %>/reviews" method="post" novalidate class="validated-form">
+        <% if (campground.reviews.length > 0 || currentUser) { %>
+         
+            <div class="col">
+                <% if (currentUser) { %>
+                    
+                    <h2>Leave a review</h2>
+                    <form action="/campgrounds/<%= campground._id %>/reviews" method="post" novalidate class="validated-form">
                     <div class="mb-3">
                         <label for="rating" class="form-label">Rating:</label>
                         <input type="range" name="review[rating]" class="form-range" id="rating" min="1" max="5">
@@ -67,6 +69,7 @@
                 <% } %>
                 
             </div>
+            <% } %>
         </div>
    
    
