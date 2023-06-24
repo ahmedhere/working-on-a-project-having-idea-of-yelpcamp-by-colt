@@ -6,6 +6,8 @@ const {
   validateCampground,
   isAuthor,
 } = require("../middleware/isloggedin");
+const multer = require("multer");
+const uploads = multer({ dest: "./uploads" });
 
 const Router = express.Router();
 mongoose
@@ -19,7 +21,11 @@ mongoose
 
 Router.route("/")
   .get(controller.index)
-  .post(isLoggedIn, validateCampground, controller.NewCampground);
+  // .post(isLoggedIn, validateCampground, controller.NewCampground);
+  .post(uploads.array("image"), (req, res) => {
+    console.log(req.body, req.files);
+    res.send("check your console");
+  });
 
 Router.get("/new", isLoggedIn, controller.renderNewForm);
 
