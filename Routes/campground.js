@@ -17,21 +17,17 @@ mongoose
     console.log(err);
   });
 
-Router.get("/", controller.index);
+Router.route("/")
+  .get(controller.index)
+  .post(isLoggedIn, validateCampground, controller.NewCampground);
+
 Router.get("/new", isLoggedIn, controller.renderNewForm);
-Router.get("/:id", controller.byId);
+
+Router.route("/:id")
+  .get(controller.byId)
+  .put(isLoggedIn, isAuthor, validateCampground, controller.UpdateEditForm)
+  .delete(isLoggedIn, isAuthor, controller.deleteCampground);
+
 Router.get("/:id/edit", isLoggedIn, isAuthor, controller.renderEditForm);
-
-Router.post("/", isLoggedIn, validateCampground, controller.NewCampground);
-
-Router.put(
-  "/:id",
-  isLoggedIn,
-  isAuthor,
-  validateCampground,
-  controller.UpdateEditForm
-);
-
-Router.delete("/:id", isLoggedIn, isAuthor, controller.deleteCampground);
 
 module.exports = Router;

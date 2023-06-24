@@ -1,4 +1,8 @@
 <% layout('Layout/BoilerPlate') %>
+
+<link rel="stylesheet" href="/css/stars.css">
+
+
 <div class="row">
     <div class="col-6 <%= campground.reviews.length == 0 && !currentUser ? 'offset-3': '' %>">
         <div class="card mb-3">
@@ -43,11 +47,24 @@
                     <h2>Leave a review</h2>
                     <form action="/campgrounds/<%= campground._id %>/reviews" method="post" novalidate class="validated-form">
                     <div class="mb-3">
-                        <label for="rating" class="form-label">Rating:</label>
-                        <input type="range" name="review[rating]" class="form-range" id="rating" min="1" max="5">
+                        <!-- <label for="rating" class="form-label">Rating:</label>
+                        <input type="range" name="review[rating]" class="form-range" id="rating" min="1" max="5"> -->
+                        <fieldset class="starability-basic">
+                            <input type="radio" id="no-rate" class="input-no-rate" name="review[rating]" value="1" checked aria-label="No rating." />
+                            <input type="radio" id="second-rate1" name="review[rating]" value="1" />
+                            <label for="second-rate1" title="Terrible">1 star</label>
+                            <input type="radio" id="second-rate2" name="review[rating]" value="2" />
+                            <label for="second-rate2" title="Not good">2 stars</label>
+                            <input type="radio" id="second-rate3" name="review[rating]" value="3" />
+                            <label for="second-rate3" title="Average">3 stars</label>
+                            <input type="radio" id="second-rate4" name="review[rating]" value="4" />
+                            <label for="second-rate4" title="Very good">4 stars</label>
+                            <input type="radio" id="second-rate5" name="review[rating]" value="5" />
+                            <label for="second-rate5" title="Amazing">5 stars</label>
+                          </fieldset>
                     </div>
                     <div class="mb-3">
-                        <label for="body" class="form-label">Review</label>
+                        <label for="body" class="form-label">Review Text</label>
                         <textarea class="form-control" name="review[body]" id="body" cols="3" rows="3" required></textarea>
                     </div>
                     <div class="mb-3">
@@ -59,10 +76,12 @@
                 <div class="card mb-3">
                     
                     <div class="card-body">
-                        <h5 class="card-title">Rating: <%= review.rating %></h5>
-                        <h6 class="card-subtitle mb-3 text-muted">By: <b><%=review.author.username %></b></h6>
-                        <p class="card-text"> Review: <%= review.body %></p>  
+                        <h5 class="card-title"><%=review.author.username %></h5>
+                        <p class="starability-result" data-rating="<%= review.rating %>">
+                          Rated: <%= review.rating %> stars
+                        </p>
                         
+                        <p class="card-text"> Review: <%= review.body %></p>  
                         
                         <% if (currentUser && review.author.equals(currentUser._id)) { %>
                             <form action="/campgrounds/<%= campground._id %>/reviews/<%= review._id %>?_method=DELETE" method="post">
