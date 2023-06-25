@@ -32,7 +32,7 @@
                     <div id="imageUpload" class="form-text">Upload image .jgeg .png .jpg</div>
                 </div>
                 <% campground.image.forEach((img, i) => { %>
-                    <img src="https://res.cloudinary.com/dl98qmbxw/image/upload/w_300/<%= img.filename %>" alt="<%= img.filename %>" class="img-thumbnail">
+                    <img src="<%= img.thumbnail %>" alt="<%= img.filename %>" class="img-thumbnail">
                     <input type="checkbox" name="deleteImages[]" id="image-<%= i %>" value="<%= img.filename %>">
                     <label for="image-<%= i %>">Delete?</label>
                 <% }); %>
