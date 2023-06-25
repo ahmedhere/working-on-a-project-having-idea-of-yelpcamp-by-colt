@@ -49,8 +49,14 @@ module.exports.byId = async (req, res, next) => {
 module.exports.NewCampground = async (req, res, next) => {
   try {
     const campground = new Campground(req.body.campground);
+    campground.image = req.files.map((f) => ({
+      url: f.path,
+      filename: f.filename,
+    }));
+
     campground.author = req.user._id;
     await campground.save();
+    console.log(campground);
     if (!campground.id) {
       return next(new AppError(404, "Not Found"));
     }
