@@ -1,5 +1,6 @@
 const Campground = require("../models/champground");
 const AppError = require("../AppError");
+const { cloudinary } = require("../cloudinary/index");
 
 module.exports.index = async (req, res, next) => {
   try {
@@ -56,7 +57,6 @@ module.exports.NewCampground = async (req, res, next) => {
 
     campground.author = req.user._id;
     await campground.save();
-    console.log(campground);
     if (!campground.id) {
       return next(new AppError(404, "Not Found"));
     }
@@ -101,12 +101,25 @@ module.exports.UpdateEditForm = async (req, res, next) => {
         )
       );
     }
-
     const campground = await Campground.findByIdAndUpdate(
       id,
       req.body.campground,
       { new: true }
     );
+    const imgs = req.files.map((f) => ({
+      url: f.path,
+      filename: f.filename,
+    }));
+    campground.image.push(...imgs);
+    await campground.save();
+    if (req.body.deleteImages) {
+      for (let filename of req.body.deleteImages) {
+        cloudinary.uploader.destroy(filename);
+      }
+      await campground.updateOne({
+        $pull: { image: { filename: { $in: req.body.deleteImages } } },
+      });
+    }
     if (!campground) {
       return next(new AppError(404, "not found"));
     }

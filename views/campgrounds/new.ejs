@@ -14,12 +14,7 @@
                 <div class="valid-feedback">Looks good</div>
             </div>
 
-            <div class="mb-3">
-                <input type="file" name="image" id="" multiple>
-                <!-- <label for="image" class="form-label">Image URL</label>
-                <input type="text" class="form-control" name="campground[image]" id="image" required>
-                <div class="valid-feedback">Looks good</div> -->
-            </div>
+           
             <div class="mb-3">
                 <label for="price" class="form-label">Campground Price</label>
                 <div class="input-group">
@@ -33,6 +28,11 @@
                 <textarea name="campground[description]" id="description" cols="30" rows="5" class="form-control" required></textarea>
                 <div class="valid-feedback">Looks good</div>
             </div>
+            <div class="mb-3 custom-file">
+                <label for="image" class="form-label custom-file-label">Choose file</label>
+                <input type="file" class="form-control" name="image" id="image" multiple placeholder="select images" aria-describedby="imageUpload">
+                <div id="imageUpload" class="form-text">Upload image .jgeg .png .jpg</div>
+              </div>
             <div class="mb-3">
                 <button class="btn btn-success">Add campground</button>
             </div>

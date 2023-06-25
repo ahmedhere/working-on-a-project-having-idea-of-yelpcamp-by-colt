@@ -37,7 +37,13 @@ Router.get("/new", isLoggedIn, controller.renderNewForm);
 
 Router.route("/:id")
   .get(controller.byId)
-  .put(isLoggedIn, isAuthor, validateCampground, controller.UpdateEditForm)
+  .put(
+    isLoggedIn,
+    isAuthor,
+    uploads.array("image"),
+    validateCampground,
+    controller.UpdateEditForm
+  )
   .delete(isLoggedIn, isAuthor, controller.deleteCampground);
 
 Router.get("/:id/edit", isLoggedIn, isAuthor, controller.renderEditForm);
